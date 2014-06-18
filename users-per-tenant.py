@@ -24,14 +24,18 @@ def PrintTenantId(database, table, tenant):
 def PrintEmailUsersPerTenant(database, table, tenantId):
     conn = MySQLdb.Connection(db=database, host=host, user=user, passwd=password)
     mysql = conn.cursor()
-    sql = """ SELECT extra FROM %s """" % (table)
+    sql = """ SELECT extra FROM %s """ % (table)
     print sql
     mysql.execute(sql)
     fields=mysql.fetchall()
     for field in fields:
-        print field
-        data = json.load(field)
-        print data['tenantId']
+        out=json.loads(field[2:len(field)-3])
+
+        email=out['email']
+        tenant_id=out['tenantId']
+
+        if tenantId == tenant_id:
+            print email
 
 
 
@@ -45,5 +49,5 @@ tenantId = PrintTenantId(users_database, users_table, users_tenant)
 
 print tenantId
 
-PrintEmailsUsersPerTenant(users_database, users_table, tenantId)
+PrintEmailUsersPerTenant(users_database, 'user', tenantId)
 
